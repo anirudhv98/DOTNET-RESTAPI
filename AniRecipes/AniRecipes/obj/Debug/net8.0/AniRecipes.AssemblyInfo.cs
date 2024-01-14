@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AniRecipes")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+111cef303be292a6e78208ee7c46223ef8094213")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+549c0c27f074af3edc9e5158544304059701979e")]
 [assembly: System.Reflection.AssemblyProductAttribute("AniRecipes")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AniRecipes")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
