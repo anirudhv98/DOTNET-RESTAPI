@@ -79,5 +79,25 @@ namespace AniRecipes.Controllers
             return NoContent();
 
         }
+
+        [HttpPut("{id:int}", Name = "UpdateRecipe")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+        public IActionResult UpdateRecipe(int id, [FromBody] RecipeDTO recipe)
+        {
+            if(id<0 ||  (id!=recipe.Id)) {
+                return BadRequest();
+            }
+
+            var r = RecipeStore.recipeList.FirstOrDefault(u=>u.Id==id);
+            if(r==null)
+            {
+                return NotFound();
+            }
+            r.Name= recipe.Name;
+            return NoContent();
+        }
     }
 }
