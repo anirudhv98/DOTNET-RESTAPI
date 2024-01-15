@@ -1,4 +1,5 @@
 ﻿using AniRecipes.Data;
+using AniRecipes.Models;
 using AniRecipes.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,15 @@ namespace AniRecipes.Controllers
     [ProducesResponseType(StatusCodes.Status200OK)]
     public class RecipeAPIController : ControllerBase
     {
+        private readonly ApplicationDbContext _db;
+        public RecipeAPIController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
         [HttpGet]
         public ActionResult<IEnumerable<RecipeDTO>> GetRecipes()
         {
-            return Ok(RecipeStore.recipeList);
+            return Ok(_db.Recipes.ToList());
         }
 
         [HttpGet("{id:int}", Name = "GetRecipe")]
@@ -26,7 +32,7 @@ namespace AniRecipes.Controllers
                 return BadRequest();
             }
 
-            var recipe = RecipeStore.recipeList.FirstOrDefault(u => u.Id == id);
+            var recipe = _db.Recipes.FirstOrDefault(u => u.Id == id);
             if (recipe == null)
             {
                 return NotFound();
@@ -42,7 +48,7 @@ namespace AniRecipes.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public ActionResult<RecipeDTO> CreateRecipe([FromBody] RecipeDTO recipeDTO)
         {
-            if (RecipeStore.recipeList.FirstOrDefault(u => u.Id == recipeDTO.Id) != null)
+            if (_db.Recipes.FirstOrDefault(u => u.Id == recipeDTO.Id) != null)
             {
                 ModelState.AddModelError("CustomError", "Recipe already exists");
                 return BadRequest(ModelState);
@@ -55,8 +61,15 @@ namespace AniRecipes.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            recipeDTO.Id = RecipeStore.recipeList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
-            RecipeStore.recipeList.Add(recipeDTO);
+            //recipeDTO.Id = RecipeStore.recipeList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
+            //RecipeStore.recipeList.Add(recipeDTO);
+            Recipe model = new()
+            {
+                Id = recipeDTO.Id,
+                Name = recipeDTO.Name,
+            };
+            _db.Recipes.Add(model);
+            _db.SaveChanges();
             return CreatedAtRoute("GetRecipe", new { id = recipeDTO.Id }, recipeDTO);
         }
 
@@ -70,12 +83,14 @@ namespace AniRecipes.Controllers
             {
                 return BadRequest();
             }
-            var ans = RecipeStore.recipeList.FirstOrDefault(u=>u.Id == id);
+            var ans = _db.Recipes.FirstOrDefault(u=>u.Id == id);
             if(ans==null)
             {
                 return NotFound();
             }
-            RecipeStore.recipeList.Remove(ans);
+            //RecipeStore.recipeList.Remove(ans);
+            _db.Recipes.Remove(ans);
+            _db.SaveChanges();
             return NoContent();
 
         }
@@ -91,12 +106,19 @@ namespace AniRecipes.Controllers
                 return BadRequest();
             }
 
-            var r = RecipeStore.recipeList.FirstOrDefault(u=>u.Id==id);
-            if(r==null)
+            //var r = RecipeStore.recipeList.FirstOrDefault(u=>u.Id==id);
+            //if(r==null)
+            //{
+            //    return NotFound();
+            //}
+            //r.Name= recipe.Name;
+            Recipe model = new()
             {
-                return NotFound();
-            }
-            r.Name= recipe.Name;
+                Id = recipe.Id,
+                Name = recipe.Name
+            };
+            _db.Recipes.Update(model);
+            _db.SaveChanges();
             return NoContent();
         }
     }
